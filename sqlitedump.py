@@ -2,7 +2,9 @@ import sublime, sublime_plugin
 import os
 import subprocess
 
-SQLITE_BIN_PATH = '/usr/bin/sqlite3'
+# adapted for functionality in windows (requires path to sqlite3.exe binary, and seems to work without issue :-]
+SQLITE_BIN_PATH = 'C:\\ProgramData\\chocolatey\\bin\\sqlite3.exe'
+
 
 class SqliteCommand(sublime_plugin.TextCommand):
   def run(self, edit):
@@ -26,7 +28,18 @@ class EventListener(sublime_plugin.EventListener):
       return
 
     ext = os.path.splitext(view.file_name())[1]
+    # checks for a few other filetypes (not great at python so probably did executed this a bit oddly)
+    # open filetype: [.db]
+    if ext == '.db':
+      ext = '.sqlite3'
+    # open filetype: [.sql]
+    if ext == '.sql':
+      ext = '.sqlite3'
+    # open filetype: [.sqlite3]
+    if ext == '':
+      ext = '.sqlite3'
     if not ext == '.sqlite3':
       return
 
     view.run_command('sqlite')
+    
